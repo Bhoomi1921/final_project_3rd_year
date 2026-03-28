@@ -72,7 +72,7 @@ async function markAdminFound(id) {
 
     try {
         const response = await fetch(
-            `https://missing-person-fastapi.onrender.com/mark-found/${id}`,
+            `https://missing-person-fastapi-mb79.onrender.com/mark-found/${id}`,
             {
                 method: "POST"
             }
