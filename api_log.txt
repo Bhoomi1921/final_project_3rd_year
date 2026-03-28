@@ -1,0 +1,96 @@
+2026-03-06 22:03:38.667401: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+2026-03-06 22:03:42.716461: I tensorflow/core/util/port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:03:47,948 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:03:47,948 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:03:47,948 [INFO] safe_return – Threshold will be auto-computed on first request.
+ * Serving Flask app 'api'
+ * Debug mode: on
+2026-03-06 22:03:47,982 [INFO] werkzeug – [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.18.132.12:5000
+2026-03-06 22:03:47,982 [INFO] werkzeug – [33mPress CTRL+C to quit[0m
+2026-03-06 22:03:47,998 [INFO] werkzeug –  * Restarting with watchdog (windowsapi)
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:03:58,063 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:03:58,063 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:03:58,063 [INFO] safe_return – Threshold will be auto-computed on first request.
+2026-03-06 22:03:58,081 [WARNING] werkzeug –  * Debugger is active!
+2026-03-06 22:03:58,097 [INFO] werkzeug –  * Debugger PIN: 524-908-288
+2026-03-06 22:04:20,841 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:20] "[36mGET / HTTP/1.1[0m" 304 -
+2026-03-06 22:04:20,884 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:20] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-03-06 22:04:21,030 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:21] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-03-06 22:04:21,193 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:21] "[36mGET /connect.js HTTP/1.1[0m" 304 -
+2026-03-06 22:04:21,193 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:21] "[36mGET /connect1.js HTTP/1.1[0m" 304 -
+2026-03-06 22:04:21,193 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:21] "[36mGET /connect2.js HTTP/1.1[0m" 304 -
+2026-03-06 22:04:45,828 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:04:45] "[31m[1mPOST /recognize HTTP/1.1[0m" 400 -
+2026-03-06 22:05:32,288 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:05:32] "[36mGET / HTTP/1.1[0m" 304 -
+2026-03-06 22:05:32,601 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:05:32] "[36mGET /style.css HTTP/1.1[0m" 304 -
+2026-03-06 22:05:32,640 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:05:32] "[36mGET /script.js HTTP/1.1[0m" 304 -
+2026-03-06 22:05:32,640 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:05:32] "[36mGET /connect.js HTTP/1.1[0m" 304 -
+2026-03-06 22:05:32,640 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:05:32] "[36mGET /connect1.js HTTP/1.1[0m" 304 -
+2026-03-06 22:05:32,640 [INFO] werkzeug – 127.0.0.1 - - [06/Mar/2026 22:05:32] "[36mGET /connect2.js HTTP/1.1[0m" 304 -
+2026-03-06 22:05:51,008 [INFO] safe_return – Threshold loaded from cache: 0.7901
+2026-03-06 22:05:51,008 [INFO] safe_return – Threshold: 0.7901438886109389
+2026-03-06 22:05:51,008 [INFO] safe_return – DB path exists: True
+2026-03-06 22:05:51,008 [INFO] safe_return – Temp image saved: C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\temp_uploads\e3ea175897ee4f1db4bb8406330261aa.jpg
+2026-03-06 22:05:51,593 [INFO] werkzeug –  * Detected change in 'C:\\Users\\bhagy\\AppData\\Local\\Programs\\Python\\Python310\\Lib\\site-packages\\werkzeug\\debug\\__init__.py', reloading
+2026-03-06 22:05:52,613 [INFO] werkzeug –  * Restarting with watchdog (windowsapi)
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:06:05,702 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:06:05,702 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:06:05,702 [INFO] safe_return – Threshold will be auto-computed on first request.
+2026-03-06 22:06:05,729 [WARNING] werkzeug –  * Debugger is active!
+2026-03-06 22:06:05,732 [INFO] werkzeug –  * Debugger PIN: 524-908-288
+2026-03-06 22:08:16,043 [INFO] safe_return – Threshold loaded from cache: 0.7901
+2026-03-06 22:08:16,043 [INFO] safe_return – Threshold: 0.7901438886109389
+2026-03-06 22:08:16,045 [INFO] safe_return – DB path exists: True
+2026-03-06 22:08:16,045 [INFO] safe_return – Temp image saved: C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\temp_uploads\e087b543c66f4f5fbc24ac37570c5df5.jpg
+2026-03-06 22:08:16,722 [INFO] werkzeug –  * Detected change in 'C:\\Users\\bhagy\\AppData\\Local\\Programs\\Python\\Python310\\Lib\\http\\server.py', reloading
+2026-03-06 22:08:18,199 [INFO] werkzeug –  * Restarting with watchdog (windowsapi)
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:08:32,989 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:08:32,989 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:08:32,989 [INFO] safe_return – Threshold will be auto-computed on first request.
+2026-03-06 22:08:33,019 [WARNING] werkzeug –  * Debugger is active!
+2026-03-06 22:08:33,026 [INFO] werkzeug –  * Debugger PIN: 524-908-288
+2026-03-06 22:08:52,144 [INFO] werkzeug –  * Detected change in 'C:\\Users\\bhagy\\Downloads\\Safe-Return-main\\Safe-Return-main\\static\\app_backend.py', reloading
+2026-03-06 22:08:54,004 [INFO] werkzeug –  * Restarting with watchdog (windowsapi)
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:09:08,280 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:09:08,280 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:09:08,282 [INFO] safe_return – Threshold will be auto-computed on first request.
+2026-03-06 22:09:08,314 [WARNING] werkzeug –  * Debugger is active!
+2026-03-06 22:09:08,324 [INFO] werkzeug –  * Debugger PIN: 524-908-288
+2026-03-06 22:11:48,118 [INFO] safe_return – Threshold loaded from cache: 0.7901
+2026-03-06 22:11:48,118 [INFO] safe_return – Threshold: 0.7901438886109389
+2026-03-06 22:11:48,118 [INFO] safe_return – DB path exists: True
+2026-03-06 22:11:48,118 [INFO] safe_return – Temp image saved: C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\temp_uploads\7fe993d1808d40f1a088e62d5e1d5b2c.jpg
+2026-03-06 22:11:48,973 [INFO] werkzeug –  * Detected change in 'C:\\Users\\bhagy\\AppData\\Local\\Programs\\Python\\Python310\\Lib\\site-packages\\tf_keras\\src\\layers\\normalization\\batch_normalization.py', reloading
+2026-03-06 22:11:50,375 [INFO] werkzeug –  * Restarting with watchdog (windowsapi)
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:12:05,275 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:12:05,275 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:12:05,275 [INFO] safe_return – Threshold will be auto-computed on first request.
+2026-03-06 22:12:05,304 [WARNING] werkzeug –  * Debugger is active!
+2026-03-06 22:12:05,307 [INFO] werkzeug –  * Debugger PIN: 524-908-288
+2026-03-06 22:28:12,429 [INFO] safe_return – Threshold loaded from cache: 0.7901
+2026-03-06 22:28:12,429 [INFO] safe_return – Threshold: 0.7901438886109389
+2026-03-06 22:28:12,433 [INFO] safe_return – DB path exists: True
+2026-03-06 22:28:12,433 [INFO] safe_return – Temp image saved: C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\temp_uploads\4f6cf93ca35440ed9c681382e016b8d3.jpg
+2026-03-06 22:28:17,549 [INFO] werkzeug –  * Detected change in 'C:\\Users\\bhagy\\AppData\\Local\\Programs\\Python\\Python310\\Lib\\site-packages\\tf_keras\\src\\engine\\training.py', reloading
+2026-03-06 22:28:18,912 [INFO] werkzeug –  * Restarting with watchdog (windowsapi)
+WARNING:tensorflow:From C:\Users\bhagy\AppData\Local\Programs\Python\Python310\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2026-03-06 22:28:34,009 [INFO] safe_return – Excel  : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\sheet.xlsx  \u2713
+2026-03-06 22:28:34,009 [INFO] safe_return – DB     : C:\Users\bhagy\Downloads\Safe-Return-main\Safe-Return-main\data  \u2713
+2026-03-06 22:28:34,009 [INFO] safe_return – Threshold will be auto-computed on first request.
+2026-03-06 22:28:34,037 [WARNING] werkzeug –  * Debugger is active!
+2026-03-06 22:28:34,048 [INFO] werkzeug –  * Debugger PIN: 524-908-288

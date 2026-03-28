@@ -1,0 +1,32 @@
+# requirements.txt — Safe Return Face Recognition API
+# Install with: pip install -r requirements.txt
+
+# Web framework
+flask
+flask-cors
+
+# WSGI production server
+gunicorn
+
+# Face recognition
+deepface
+opencv-python-headless   # headless = no GUI deps (server-safe)
+tf-keras              # required by newer deepface versions
+
+# Image processing
+Pillow
+# Data
+numpy
+pandas
+openpyxl                 # for reading .xlsx files
+blinker
+click
+colorama
+dnspython
+Flask
+flask-cors
+itsdangerous
+Jinja2
+MarkupSafe
+pymongo
+Werkzeug

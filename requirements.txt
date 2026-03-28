@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+jinja2
+pymongo
+python-dotenv
+python-multipart
+dnspython
+aiofiles
+pydantic
+deepface
+openpyxl
