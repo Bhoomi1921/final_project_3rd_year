@@ -62,55 +62,147 @@ var adminReports = [
 //         '</tr>';
 //     }).join('');
 // }
+// ====================================================================================================================
+// async function renderAdminTable() {
 
+//     const searchValue = document.getElementById("admin-srch").value.toLowerCase();
+//     const statusFilter = document.getElementById("admin-filt").value;
+
+//     try {
+//         const response = await fetch("https://missing-person-fastapi-mb79.onrender.com/get-missing-reports");
+//         const reports = await response.json();
+
+//         let filtered = reports;
+
+//         // 🔍 SEARCH BY NAME
+//         if (searchValue) {
+//             filtered = filtered.filter(r =>
+//                 (r.full_name || "").toLowerCase().includes(searchValue)
+//             );
+//         }
+
+//         // 📂 FILTER BY STATUS
+//         if (statusFilter) {
+//             filtered = filtered.filter(r =>
+//                 (r.status || "Missing") === statusFilter
+//             );
+//         }
+
+//         const tb = document.getElementById("admin-tbl-body");
+
+//         if (!filtered.length) {
+//             tb.innerHTML = `
+//                 <tr>
+//                     <td colspan="6" style="text-align:center;padding:20px;">
+//                         No records found
+//                     </td>
+//                 </tr>`;
+//             return;
+//         }
+
+//         tb.innerHTML = filtered.map(r => {
+
+//             const status = r.status || "Missing";
+//             const statusClass = status.toLowerCase();
+
+//             const photoHtml = r.photo_path
+//                 ? `<img src="https://missing-person-fastapi-mb79.onrender.com/${r.photo_path}" width="40" height="40" style="border-radius:50%">`
+//                 : `<i class="fas fa-user"></i>`;
+
+//             const foundBtn = status !== "Found"
+//                 ? `<button class="ar-btn ar-found-btn" onclick="markAdminFound('${r._id}')">✅ Found</button>`
+//                 : "";
+
+//             return `
+//                 <tr>
+//                     <td>
+//                         <div class="apc">
+//                             <div class="apc-ava">${photoHtml}</div>
+//                             <div>
+//                                 <div class="apc-name">${r.full_name || "-"}</div>
+//                                 <div class="apc-sub">ID #${r._id}</div>
+//                             </div>
+//                         </div>
+//                     </td>
+//                     <td><strong>${r.age || "-"}</strong> · ${r.gender || "-"}</td>
+//                     <td>${r.contact_name || "-"}</td>
+//                     <td>${r.contact_phone || "-"}</td>
+//                     <td>
+//                         <span class="ar-badge ar-${statusClass}">
+//                             <span class="ar-dot"></span>${status}
+//                         </span>
+//                     </td>
+//                     <td>
+//                         <div class="ar-acts">
+//                             <button class="ar-btn">View</button>
+//                             <button class="ar-btn ar-ai">🤖 Recognition</button>
+//                             ${foundBtn}
+//                         </div>
+//                     </td>
+//                 </tr>
+//             `;
+//         }).join("");
+
+//     } catch (error) {
+//         console.error("Error loading reports:", error);
+//     }
+// }
+// =============================================================================================================================
 async function renderAdminTable() {
+    const searchValue  = (document.getElementById("admin-srch")?.value || "").toLowerCase();
+    const statusFilter = document.getElementById("admin-filt")?.value || "";
 
-    const searchValue = document.getElementById("admin-srch").value.toLowerCase();
-    const statusFilter = document.getElementById("admin-filt").value;
+    const tb = document.getElementById("admin-tbl-body");
+    if (!tb) return;
 
     try {
         const response = await fetch("https://missing-person-fastapi-mb79.onrender.com/get-missing-reports");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const reports = await response.json();
 
+        // ── Update stat counters ──────────────────────────────
+        const statTotal = document.getElementById("stat-total");
+        const statFound = document.getElementById("stat-found");
+        if (statTotal) statTotal.textContent = reports.length;
+        if (statFound) statFound.textContent = reports.filter(r => r.status === "Found").length;
+
+        // ── Filter ────────────────────────────────────────────
         let filtered = reports;
-
-        // 🔍 SEARCH BY NAME
-        if (searchValue) {
-            filtered = filtered.filter(r =>
-                (r.full_name || "").toLowerCase().includes(searchValue)
-            );
-        }
-
-        // 📂 FILTER BY STATUS
-        if (statusFilter) {
-            filtered = filtered.filter(r =>
-                (r.status || "Missing") === statusFilter
-            );
-        }
-
-        const tb = document.getElementById("admin-tbl-body");
+        if (searchValue)  filtered = filtered.filter(r => (r.full_name || "").toLowerCase().includes(searchValue));
+        if (statusFilter) filtered = filtered.filter(r => (r.status || "Missing") === statusFilter);
 
         if (!filtered.length) {
             tb.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align:center;padding:20px;">
-                        No records found
+                    <td colspan="6">
+                        <div class="ar-empty">
+                            <i class="fas fa-search"></i>
+                            <h3>No records found</h3>
+                            <p>Adjust your search or filter.</p>
+                        </div>
                     </td>
                 </tr>`;
             return;
         }
 
+        // ── Render rows ───────────────────────────────────────
         tb.innerHTML = filtered.map(r => {
-
-            const status = r.status || "Missing";
+            const status      = r.status || "Missing";
             const statusClass = status.toLowerCase();
+            const id          = r._id;
+            const date        = r.last_seen_datetime
+                ? r.last_seen_datetime.substring(0, 10)
+                : (r.created_at ? r.created_at.substring(0, 10) : "—");
 
             const photoHtml = r.photo_path
-                ? `<img src="https://missing-person-fastapi-mb79.onrender.com/${r.photo_path}" width="40" height="40" style="border-radius:50%">`
+                ? `<img src="https://missing-person-fastapi-mb79.onrender.com/${r.photo_path}"
+                        alt="${r.full_name || ''}"
+                        onerror="this.style.display='none'"
+                        width="40" height="40" style="border-radius:50%;object-fit:cover;">`
                 : `<i class="fas fa-user"></i>`;
 
             const foundBtn = status !== "Found"
-                ? `<button class="ar-btn ar-found-btn" onclick="markAdminFound('${r._id}')">✅ Found</button>`
+                ? `<button class="ar-btn ar-found-btn" onclick="markAdminFound('${id}')">✅ Found</button>`
                 : "";
 
             return `
@@ -119,14 +211,16 @@ async function renderAdminTable() {
                         <div class="apc">
                             <div class="apc-ava">${photoHtml}</div>
                             <div>
-                                <div class="apc-name">${r.full_name || "-"}</div>
-                                <div class="apc-sub">ID #${r._id}</div>
+                                <div class="apc-name">${r.full_name || "—"}</div>
+                                <div class="apc-sub">ID #${id} · ${date}</div>
                             </div>
                         </div>
                     </td>
-                    <td><strong>${r.age || "-"}</strong> · ${r.gender || "-"}</td>
-                    <td>${r.contact_name || "-"}</td>
-                    <td>${r.contact_phone || "-"}</td>
+                    <td><strong>${r.age || "—"}</strong> · ${r.gender || "—"}</td>
+                    <td style="max-width:160px;font-size:12.5px;line-height:1.4">
+                        ${r.last_seen_location || r.contact_name || "—"}
+                    </td>
+                    <td style="font-size:12.5px">${date}</td>
                     <td>
                         <span class="ar-badge ar-${statusClass}">
                             <span class="ar-dot"></span>${status}
@@ -134,25 +228,120 @@ async function renderAdminTable() {
                     </td>
                     <td>
                         <div class="ar-acts">
-                            <button class="ar-btn">View</button>
-                            <button class="ar-btn ar-ai">🤖 Recognition</button>
+                            <button class="ar-btn"    onclick="viewAdminDetail('${id}')">View</button>
+                            <button class="ar-btn ar-ai" onclick="runAdminRecog('${id}')">🤖 Recognition</button>
                             ${foundBtn}
                         </div>
                     </td>
-                </tr>
-            `;
+                </tr>`;
         }).join("");
+
+        // ── Store reports globally so runAdminRecog can look up photo_path ──
+        window._adminReports = reports;
 
     } catch (error) {
         console.error("Error loading reports:", error);
+        tb.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center;padding:20px;color:red;">
+                    ⚠️ Failed to load reports. Check console for details.
+                </td>
+            </tr>`;
     }
 }
 
-// function markAdminFound(id) {
-//     var r = adminReports.find(function(x){ return String(x.id)===String(id); });
-//     if (r) { r.status = 'Found'; renderAdminTable(); }
-//     fetch('https://missing-person-fastapi.onrender.com/mark-found/'+id,{method:'POST'}).catch(function(e){console.error(e);});
-// } 
+// ════════════════════════════════════════════════════════
+//  Recognition — fetches the stored photo and runs /recognize
+// ════════════════════════════════════════════════════════
+async function runAdminRecog(reportId) {
+    // Find the report from the globally stored list
+    const reports = window._adminReports || [];
+    const report  = reports.find(r => r._id === reportId);
+
+    if (!report) {
+        alert("Report not found. Please refresh the table.");
+        return;
+    }
+
+    if (!report.photo_path) {
+        alert("No photo available for this report to run recognition.");
+        return;
+    }
+
+    // ── Show loading state on the button ─────────────────
+    const btn = event?.target;
+    const originalText = btn?.innerHTML || "";
+    if (btn) { btn.innerHTML = "⏳ Running..."; btn.disabled = true; }
+
+    try {
+        // 1. Fetch the stored photo as a blob and convert to base64
+        const photoUrl = `https://missing-person-fastapi-mb79.onrender.com/${report.photo_path}`;
+        const imgResp  = await fetch(photoUrl);
+        if (!imgResp.ok) throw new Error("Could not fetch the report photo.");
+
+        const blob   = await imgResp.blob();
+        const base64 = await blobToBase64(blob);
+
+        // 2. Send to the /recognize endpoint
+        const recogResp = await fetch("https://missing-person-fastapi-mb79.onrender.com/recognize", {
+            method:  "POST",
+            headers: { "Content-Type": "application/json" },
+            body:    JSON.stringify({ image: base64, location: "Admin Panel" })
+        });
+
+        const result = await recogResp.json();
+
+        // 3. Show result
+        showRecogResult(report, result);
+
+    } catch (err) {
+        console.error("Recognition error:", err);
+        alert("Recognition failed: " + err.message);
+    } finally {
+        if (btn) { btn.innerHTML = originalText; btn.disabled = false; }
+    }
+}
+
+// ── Helper: Blob → base64 data-URL ───────────────────────
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload  = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+// ── Show recognition result in a modal/alert ─────────────
+function showRecogResult(report, result) {
+    if (!result.success) {
+        alert(`❌ Recognition Error:\n${result.detail || result.error || "Unknown error"}`);
+        return;
+    }
+
+    if (!result.match && !result.low_confidence) {
+        alert(`🔍 No Match Found\n\nNo matching person was found in the database for:\n"${report.full_name}"`);
+        return;
+    }
+
+    const matchType = result.match ? "✅ MATCH FOUND" : "⚠️ LOW CONFIDENCE MATCH";
+    const msg = `
+${matchType}
+
+Report Person : ${report.full_name}
+Matched Person: ${result.person_name || "—"}
+Person ID     : ${result.person_id   || "—"}
+Confidence    : ${result.confidence  || "—"}%
+Threshold     : ${result.threshold   || "—"}
+    `.trim();
+
+    alert(msg);
+
+    // ── Optional: if you have a modal, populate it instead ──
+    // populateRecogModal(report, result);
+}
+
+
 async function markAdminFound(id) {
 
     try {
