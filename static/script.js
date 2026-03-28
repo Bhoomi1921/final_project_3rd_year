@@ -101,13 +101,14 @@ function viewAdminDetail(id) {
 }
 
 function loadAdminReports() {
-    fetch('http://127.0.0.1:5001/get-reports')
+    // fetch('http://127.0.0.1:5001/get-reports')
+    fetch('https://missing-person-fastapi.mb79.onrender.com/get-reports')
         .then(function(res){return res.json();})
         .then(function(data){
             if (Array.isArray(data)&&data.length>0) {
                 adminReports=data.map(function(r){
                     var photoUrl=null;
-                    if(r.photo_path){var fn=r.photo_path.replace(/\\/g,'/').split('/').pop();photoUrl='http://127.0.0.1:5000/data/'+fn;}
+                    if(r.photo_path){var fn=r.photo_path.replace(/\\/g,'/').split('/').pop();photoUrl='https://missing-person-fastapi.mb79.onrender.com/data/'+fn;}
                     return{id:r._id,name:r.full_name||'Unknown',age:r.age||'—',gender:r.gender||'Unknown',loc:r.last_seen_location||'—',date:(r.last_seen_datetime||'').slice(0,10),status:r.status||'Missing',photo:photoUrl,familyPhone:r.contact_phone||'',source:'db'};
                 });
             }
