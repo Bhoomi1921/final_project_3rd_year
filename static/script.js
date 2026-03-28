@@ -31,36 +31,121 @@ var adminReports = [
     { id:5, name:'Bashir Ahmed',  age:70, gender:'Male',   loc:'Multan Chungi No. 9',          date:'2024-12-12', status:'Missing',    photo:null },
 ];
 
-function renderAdminTable() {
-    var q  = document.getElementById('admin-srch') ? document.getElementById('admin-srch').value.toLowerCase() : '';
-    var fs = document.getElementById('admin-filt') ? document.getElementById('admin-filt').value : '';
-    var data = adminReports.slice();
-    if (fs) data = data.filter(function(r){ return r.status === fs; });
-    if (q)  data = data.filter(function(r){ return r.name.toLowerCase().indexOf(q) !== -1; });
-    var statTotal = document.getElementById('stat-total');
-    var statFound = document.getElementById('stat-found');
-    if (statTotal) statTotal.textContent = adminReports.length;
-    if (statFound) statFound.textContent = adminReports.filter(function(r){ return r.status === 'Found'; }).length;
-    var tb = document.getElementById('admin-tbl-body');
-    if (!tb) return;
-    if (!data.length) {
-        tb.innerHTML = '<tr><td colspan="6"><div class="ar-empty"><i class="fas fa-search"></i><h3>No records found</h3><p>Adjust your search or filter.</p></div></td></tr>';
-        return;
+// function renderAdminTable() {
+//     var q  = document.getElementById('admin-srch') ? document.getElementById('admin-srch').value.toLowerCase() : '';
+//     var fs = document.getElementById('admin-filt') ? document.getElementById('admin-filt').value : '';
+//     var data = adminReports.slice();
+//     if (fs) data = data.filter(function(r){ return r.status === fs; });
+//     if (q)  data = data.filter(function(r){ return r.name.toLowerCase().indexOf(q) !== -1; });
+//     var statTotal = document.getElementById('stat-total');
+//     var statFound = document.getElementById('stat-found');
+//     if (statTotal) statTotal.textContent = adminReports.length;
+//     if (statFound) statFound.textContent = adminReports.filter(function(r){ return r.status === 'Found'; }).length;
+//     var tb = document.getElementById('admin-tbl-body');
+//     if (!tb) return;
+//     if (!data.length) {
+//         tb.innerHTML = '<tr><td colspan="6"><div class="ar-empty"><i class="fas fa-search"></i><h3>No records found</h3><p>Adjust your search or filter.</p></div></td></tr>';
+//         return;
+//     }
+//     tb.innerHTML = data.map(function(r) {
+//         var statusKey  = r.status.toLowerCase();
+//         var avatarHtml = r.photo ? '<img src="'+r.photo+'" alt="'+r.name+'" onerror="this.style.display=\'none\'"/>' : '<i class="fas fa-user"></i>';
+//         var foundBtn   = (r.status !== 'Found') ? '<button class="ar-btn ar-found-btn" onclick="markAdminFound(\''+r.id+'\')">✅ Found</button>' : '';
+//         return '<tr>'+
+//             '<td><div class="apc"><div class="apc-ava">'+avatarHtml+'</div><div><div class="apc-name">'+r.name+'</div><div class="apc-sub">ID #'+r.id+' · '+r.date+'</div></div></div></td>'+
+//             '<td><strong>'+r.age+'</strong> · '+r.gender+'</td>'+
+//             '<td style="max-width:160px;font-size:12.5px;line-height:1.4">'+(r.loc||'—')+'</td>'+
+//             '<td style="font-size:12.5px">'+r.date+'</td>'+
+//             '<td><span class="ar-badge ar-'+statusKey+'"><span class="ar-dot"></span>'+r.status+'</span></td>'+
+//             '<td><div class="ar-acts"><button class="ar-btn" onclick="viewAdminDetail(\''+r.id+'\')">View</button>'+
+//             '<button class="ar-btn ar-ai" onclick="runAdminRecog(\''+r.id+'\')">🤖 Recognition</button>'+foundBtn+'</div></td>'+
+//         '</tr>';
+//     }).join('');
+// }
+
+async function renderAdminTable() {
+
+    const searchValue = document.getElementById("admin-srch").value.toLowerCase();
+    const statusFilter = document.getElementById("admin-filt").value;
+
+    try {
+        const response = await fetch("https://missing-person-fastapi-mb79.onrender.com/get-missing-reports");
+        const reports = await response.json();
+
+        let filtered = reports;
+
+        // 🔍 SEARCH BY NAME
+        if (searchValue) {
+            filtered = filtered.filter(r =>
+                (r.full_name || "").toLowerCase().includes(searchValue)
+            );
+        }
+
+        // 📂 FILTER BY STATUS
+        if (statusFilter) {
+            filtered = filtered.filter(r =>
+                (r.status || "Missing") === statusFilter
+            );
+        }
+
+        const tb = document.getElementById("admin-tbl-body");
+
+        if (!filtered.length) {
+            tb.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center;padding:20px;">
+                        No records found
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tb.innerHTML = filtered.map(r => {
+
+            const status = r.status || "Missing";
+            const statusClass = status.toLowerCase();
+
+            const photoHtml = r.photo_path
+                ? `<img src="https://missing-person-fastapi-mb79.onrender.com/${r.photo_path}" width="40" height="40" style="border-radius:50%">`
+                : `<i class="fas fa-user"></i>`;
+
+            const foundBtn = status !== "Found"
+                ? `<button class="ar-btn ar-found-btn" onclick="markAdminFound('${r._id}')">✅ Found</button>`
+                : "";
+
+            return `
+                <tr>
+                    <td>
+                        <div class="apc">
+                            <div class="apc-ava">${photoHtml}</div>
+                            <div>
+                                <div class="apc-name">${r.full_name || "-"}</div>
+                                <div class="apc-sub">ID #${r._id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><strong>${r.age || "-"}</strong> · ${r.gender || "-"}</td>
+                    <td>${r.contact_name || "-"}</td>
+                    <td>${r.contact_phone || "-"}</td>
+                    <td>
+                        <span class="ar-badge ar-${statusClass}">
+                            <span class="ar-dot"></span>${status}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="ar-acts">
+                            <button class="ar-btn">View</button>
+                            <button class="ar-btn ar-ai">🤖 Recognition</button>
+                            ${foundBtn}
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("Error loading reports:", error);
     }
-    tb.innerHTML = data.map(function(r) {
-        var statusKey  = r.status.toLowerCase();
-        var avatarHtml = r.photo ? '<img src="'+r.photo+'" alt="'+r.name+'" onerror="this.style.display=\'none\'"/>' : '<i class="fas fa-user"></i>';
-        var foundBtn   = (r.status !== 'Found') ? '<button class="ar-btn ar-found-btn" onclick="markAdminFound(\''+r.id+'\')">✅ Found</button>' : '';
-        return '<tr>'+
-            '<td><div class="apc"><div class="apc-ava">'+avatarHtml+'</div><div><div class="apc-name">'+r.name+'</div><div class="apc-sub">ID #'+r.id+' · '+r.date+'</div></div></div></td>'+
-            '<td><strong>'+r.age+'</strong> · '+r.gender+'</td>'+
-            '<td style="max-width:160px;font-size:12.5px;line-height:1.4">'+(r.loc||'—')+'</td>'+
-            '<td style="font-size:12.5px">'+r.date+'</td>'+
-            '<td><span class="ar-badge ar-'+statusKey+'"><span class="ar-dot"></span>'+r.status+'</span></td>'+
-            '<td><div class="ar-acts"><button class="ar-btn" onclick="viewAdminDetail(\''+r.id+'\')">View</button>'+
-            '<button class="ar-btn ar-ai" onclick="runAdminRecog(\''+r.id+'\')">🤖 Recognition</button>'+foundBtn+'</div></td>'+
-        '</tr>';
-    }).join('');
 }
 
 // function markAdminFound(id) {
