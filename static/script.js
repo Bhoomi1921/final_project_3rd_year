@@ -63,10 +63,35 @@ function renderAdminTable() {
     }).join('');
 }
 
-function markAdminFound(id) {
-    var r = adminReports.find(function(x){ return String(x.id)===String(id); });
-    if (r) { r.status = 'Found'; renderAdminTable(); }
-    fetch('http://127.0.0.1:5001/mark-found/'+id,{method:'POST'}).catch(function(e){console.error(e);});
+// function markAdminFound(id) {
+//     var r = adminReports.find(function(x){ return String(x.id)===String(id); });
+//     if (r) { r.status = 'Found'; renderAdminTable(); }
+//     fetch('https://missing-person-fastapi.onrender.com/mark-found/'+id,{method:'POST'}).catch(function(e){console.error(e);});
+// } 
+async function markAdminFound(id) {
+
+    try {
+        const response = await fetch(
+            `https://missing-person-fastapi.onrender.com/mark-found/${id}`,
+            {
+                method: "POST"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(result.error || "Failed to update status");
+            return;
+        }
+
+        // 🔥 Reload table from MongoDB
+        renderAdminTable();
+
+    } catch (error) {
+        console.error("Error updating status:", error);
+        alert("Server error while updating status");
+    }
 }
 
 function viewAdminDetail(id) {
@@ -237,11 +262,58 @@ function showReportForm(){
 }
 function showFoundReportForm(){hideAllPages();var fp=document.getElementById('foundReportPage');if(fp)fp.style.display='block';window.scrollTo(0,0);}
 
-// ── Forms ────────────────────────────────────────────
-function submitFoundReport(){
-    var loc=document.getElementById('foundLocation').value,phone=document.getElementById('contact_phone').value;
-    if(!loc||!phone){alert('Please provide location and contact number.');return;}
-    alert('Found Family Report submitted successfully!');showDashboard();
+// // ── Forms ────────────────────────────────────────────
+// function submitFoundReport(){
+//     var loc=document.getElementById('foundLocation').value,phone=document.getElementById('contact_phone').value;
+//     if(!loc||!phone){alert('Please provide location and contact number.');return;}
+//     alert('Found Family Report submitted successfully!');showDashboard();
+// }
+
+function submitPublicLostReport() {
+
+    const photoFiles = document.getElementById('publicPhotoInput').files;
+
+    if (photoFiles.length === 0) {
+        alert("Please upload at least one photo of the lost person.");
+        return;
+    }
+
+    const lostPersonData = {
+        public_fullName: document.getElementById('public_fullName').value,
+        public_age: document.getElementById('public_age').value,
+        gender: document.getElementById('gender').value,
+        language_spoken: document.getElementById('language_spoken').value,
+        public_location: document.getElementById('public_location').value,
+        public_dateTime: document.getElementById('public_dateTime').value,
+        clothing_description: document.getElementById('clothing_description').value,
+        general_description: document.getElementById('general_description').value,
+        public_familyName: document.getElementById('public_familyName').value,
+        public_familyPhone: document.getElementById('public_familyPhone').value,
+    };
+
+    // Basic validation
+    if (!lostPersonData.public_fullName || !lostPersonData.public_familyPhone) {
+        alert("Please provide name and contact number.");
+        return;
+    }
+
+    // Store in frontend (temporary)
+    adminReports.push({
+        id: adminReports.length + 1,
+        name: lostPersonData.public_fullName,
+        age: lostPersonData.public_age || '—',
+        gender: lostPersonData.gender || 'Unknown',
+        loc: lostPersonData.public_location || '—',
+        date: new Date().toISOString().slice(0, 10),
+        status: 'Missing',
+        photo: null
+    });
+
+    console.log("Frontend Data:", lostPersonData);
+
+    alert("Lost Person Report Submitted Successfully!");
+
+    showDashboard();
 }
 
 // ── File Upload ──────────────────────────────────────

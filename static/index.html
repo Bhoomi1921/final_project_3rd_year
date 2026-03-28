@@ -6,7 +6,7 @@
     <title>Safe Return | Reuniting Families</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
@@ -316,21 +316,21 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Inmate ID *</label>
-                            <input type="text" id="admin-inmateId" placeholder="e.g. SR-2024-001">
+                            <input type="text" id="admin_inmateId" placeholder="e.g. SR-2024-001">
                         </div>
                         <div class="form-group">
                             <label>Registration No. *</label>
-                            <input type="text" id="admin-regNo" placeholder="Enter registration number">
+                            <input type="text" id="admin_regNo" placeholder="Enter registration number">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Unique ID (Aadhar/Govt ID)</label>
-                            <input type="text" id="admin-uniqueId" placeholder="12-digit ID number">
+                            <input type="text" id="admin_uniqueId" placeholder="12-digit ID number">
                         </div>
                         <div class="form-group">
                             <label>Inmate Current Status *</label>
-                            <select id="admin-status">
+                            <select id="admin_status">
                                 <option value="Active">Active (In Shelter)</option>
                                 <option value="Released">Released</option>
                                 <option value="Transferred">Transferred</option>
@@ -344,17 +344,17 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Full Name *</label>
-                            <input type="text" id="admin-fullName" placeholder="Enter full name">
+                            <input type="text" id="admin_fullName" placeholder="Enter full name">
                         </div>
                         <div class="form-group">
                             <label>Date of Birth *</label>
-                            <input type="date" id="admin-dob">
+                            <input type="date" id="admin_dob">
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Gender *</label>
-                            <select id="admin-gender">
+                            <select id="admin_gender">
                                 <option value="">Select gender</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
@@ -363,17 +363,17 @@
                         </div>
                         <div class="form-group">
                             <label>Languages Spoken</label>
-                            <input type="text" id="admin-languages" placeholder="Hindi, English">
+                            <input type="text" id="admin_languages" placeholder="Hindi, English">
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Permanent Address (if known)</label>
-                        <textarea id="admin-address" placeholder="Enter complete address, city, state, and pincode"></textarea>
+                        <textarea id="admin_address" placeholder="Enter complete address, city, state, and pincode"></textarea>
                     </div>
                 </div>
                 <div class="form-group" id="admin-date-joining-group">
                     <label>Date of Joining *</label>
-                    <input type="date" id="admin-joiningDate">
+                    <input type="date" id="admin_joiningDate">
                 </div>
                 <div class="form-section bg-light-purple">
                     <h3><i class="fas fa-camera"></i> Photo Upload</h3>
@@ -422,11 +422,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Full Name *</label>
-                            <input type="text" id="public-fullName" placeholder="Enter full name">
+                            <input type="text" id="public_fullName" placeholder="Enter full name">
                         </div>
                         <div class="form-group">
                             <label>Age *</label>
-                            <input type="number" id="public-age" placeholder="Enter age">
+                            <input type="number" id="public_age" placeholder="Enter age">
                         </div>
                     </div>
                     <div class="form-row">
@@ -445,11 +445,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Last Seen Location *</label>
-                            <input type="text" id="public-location" placeholder="Location name">
+                            <input type="text" id="public_location" placeholder="Location name">
                         </div>
                         <div class="form-group">
                             <label>Last Seen Date & Time *</label>
-                            <input type="datetime-local" id="public-dateTime">
+                            <input type="datetime-local" id="public_dateTime">
                         </div>
                     </div>
                 </div>
@@ -484,11 +484,11 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>Name of Family Member *</label>
-                            <input type="text" id="public-familyName" placeholder="Enter name">
+                            <input type="text" id="public_familyName" placeholder="Enter name">
                         </div>
                         <div class="form-group">
                             <label>Phone Number *</label>
-                            <input type="text" id="public-familyPhone" placeholder="+91 00000 00000">
+                            <input type="text" id="public_familyPhone" placeholder="+91 00000 00000">
                         </div>
                     </div>
                     <div class="form-row">
@@ -954,11 +954,11 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="connect.js"></script>
-    <script src="connect1.js"></script>
-    <script src="connect2.js"></script>
+    <script src="/static/script.js"></script>
+    <script src="/static/connect.js"></script>
+    <script src="/static/connect1.js"></script>
+    <script src="/static/connect2.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="chatbot.js"></script>
+    <script src="/static/chatbot.js"></script>
 </body>
 </html>

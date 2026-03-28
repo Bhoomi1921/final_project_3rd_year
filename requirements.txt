@@ -7,5 +7,3 @@ python-multipart
 dnspython
 aiofiles
 pydantic
-deepface
-openpyxl
