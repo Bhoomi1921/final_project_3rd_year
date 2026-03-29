@@ -1,3 +1,8 @@
+pydantic
+pillow
+numpy 
+pandas
+openpyxl
 fastapi
 uvicorn
 jinja2
@@ -6,9 +11,6 @@ python-dotenv
 python-multipart
 dnspython
 aiofiles
-pydantic
 deepface
-pillow
-numpy 
-pandas
-openpyxl
+tensorflow
+opencv-python
