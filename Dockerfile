@@ -15,4 +15,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # Start your app (change if needed)
-CMD ["python", "app.py"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "10000"]
