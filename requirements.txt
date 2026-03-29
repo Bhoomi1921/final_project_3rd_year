@@ -14,3 +14,4 @@ aiofiles
 deepface
 tensorflow
 opencv-python
+tf-keras
