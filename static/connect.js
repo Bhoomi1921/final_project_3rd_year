@@ -178,7 +178,7 @@
 // });
 
 
-const BASE_URL = "https://missing-person-fastapi-mb79.onrender.com"; 
+const BASE_URL = "https://final-project-3rd-year.onrender.com"; 
 // 👉 After deployment, change to your Render URL
 
 async function submitPublicLostReport() {

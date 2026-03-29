@@ -103,7 +103,7 @@ var adminReports = [];
 
 /* ---------- LOAD REPORTS FROM LIVE API ---------- */
 function loadAdminReports() {
-    fetch('https://missing-person-fastapi-mb79.onrender.com/get-missing-reports')
+    fetch('https://final-project-3rd-year.onrender.com/get-missing-reports')
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (Array.isArray(data) && data.length > 0) {
@@ -113,7 +113,7 @@ function loadAdminReports() {
                     if (r.photo_path) {
                         /* photo_path is typically "data/filename.jpg" or similar */
                         var cleanPath = r.photo_path.replace(/\\/g, '/');
-                        photoUrl = 'https://missing-person-fastapi-mb79.onrender.com/' + cleanPath;
+                        photoUrl = 'https://final-project-3rd-year.onrender.com/' + cleanPath;
                     }
                     return {
                         id:          r._id,
@@ -234,12 +234,12 @@ function markAdminFound(id) {
     }
 
     /* Sync to live API (FastAPI on onrender) */
-    fetch('https://missing-person-fastapi-mb79.onrender.com/mark-found/' + id, {
+    fetch('https://final-project-3rd-year.onrender.com/mark-found/' + id, {
         method: 'POST'
     }).catch(function(e) { console.error('mark-found (remote) error:', e); });
 
     /* Also sync to local Flask if running */
-    fetch('http://127.0.0.1:5001/mark-found/' + id, {
+    fetch('https://final-project-3rd-year.onrender.com/mark-found/' + id, {
         method: 'POST'
     }).catch(function(e) { console.warn('mark-found (local) not available:', e); });
 }
@@ -267,7 +267,7 @@ function runAdminRecog(id) {
     var btn = document.querySelector('[onclick="runAdminRecog(\'' + id + '\')"]');
     if (btn) { btn.textContent = '⏳ Running…'; btn.disabled = true; }
 
-    fetch('http://127.0.0.1:5001/recognize/' + id, { method: 'POST' })
+    fetch('https://final-project-3rd-year.onrender.com/recognize/' + id, { method: 'POST' })
         .then(function(res) { return res.json(); })
         .then(function(result) {
             if (btn) { btn.textContent = '🤖 Recognition'; btn.disabled = false; }
@@ -290,7 +290,7 @@ function runAdminRecog(id) {
 }
 
 // ── Face Recognition ─────────────────────────────────
-const API_BASE="http://localhost:5000";
+const API_BASE="https://final-project-3rd-year.onrender.com";
 var _recogTargetId=null;
 
 function runAdminRecog(id){
@@ -300,7 +300,7 @@ function runAdminRecog(id){
     if(r.photo){
         if(r.photo.startsWith('data:')){_showRecogModal(r.name,r.photo);return;}
         var photoUrl=r.photo;
-        if(photoUrl.startsWith('/'))photoUrl='http://localhost:5000'+photoUrl;
+        if(photoUrl.startsWith('/'))photoUrl='https://final-project-3rd-year.onrender.com'+photoUrl;
         fetch(photoUrl).then(function(res){if(!res.ok)throw new Error('HTTP '+res.status);return res.blob();})
         .then(function(blob){var rd=new FileReader();rd.onload=function(e){_showRecogModal(r.name,e.target.result);};rd.readAsDataURL(blob);})
         .catch(function(){_showRecogModal(r.name,null);});
@@ -384,7 +384,7 @@ function _sendToRecognize(dataURL){
                 '<tr><td style="color:#64748b;padding:3px 0;">Confidence</td><td><span style="background:#dcfce7;color:#16a34a;padding:2px 10px;border-radius:20px;font-weight:700;">'+data.confidence+'%</span></td></tr></table></div>';
             if(r){r.status='Found';renderAdminTable();}
             showToast('Match Found','✅ '+data.person_name+' ('+data.confidence+'%)','success');
-            fetch('http://127.0.0.1:5001/save-notification',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'match',title:'Match Found — '+(data.person_name||'Unknown'),message:'Face recognition match found for '+(r?r.name:'person')+' with '+data.confidence+'% confidence.',report_name:r?r.name:'',phone:r?(r.familyPhone||''):'',read:false})}).catch(function(){});
+            fetch('https://final-project-3rd-year.onrender.com/save-notification',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'match',title:'Match Found — '+(data.person_name||'Unknown'),message:'Face recognition match found for '+(r?r.name:'person')+' with '+data.confidence+'% confidence.',report_name:r?r.name:'',phone:r?(r.familyPhone||''):'',read:false})}).catch(function(){});
         }else{
             resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;"><div style="color:#dc2626;font-size:1.05rem;font-weight:700;margin-bottom:8px;">❌ No Match Found</div><p style="color:#64748b;font-size:.88rem;margin:0;">'+(data.message||'No match found')+'</p></div>';
             if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}
