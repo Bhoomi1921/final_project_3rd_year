@@ -7,3 +7,8 @@ python-multipart
 dnspython
 aiofiles
 pydantic
+deepface
+pillow
+numpy 
+pandas
+openpyxl
