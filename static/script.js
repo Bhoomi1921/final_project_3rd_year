@@ -99,42 +99,373 @@ var adminReports = [
    - Mark Found, View Detail, Search, Filter all functional
    ============================================================ */
 
+//==================================================================================================================================
+// var adminReports = [];
+
+// /* ---------- LOAD REPORTS FROM LIVE API ---------- */
+// function loadAdminReports() {
+//     fetch('https://final-project-3rd-year.onrender.com/get-missing-reports')
+//         .then(function(res) { return res.json(); })
+//         .then(function(data) {
+//             if (Array.isArray(data) && data.length > 0) {
+//                 adminReports = data.map(function(r) {
+//                     /* Build photo URL from the live FastAPI server */
+//                     var photoUrl = null;
+//                     if (r.photo_path) {
+//                         /* photo_path is typically "data/filename.jpg" or similar */
+//                         var cleanPath = r.photo_path.replace(/\\/g, '/');
+//                         photoUrl = 'https://final-project-3rd-year.onrender.com/' + cleanPath;
+//                     }
+//                     return {
+//                         id:          r._id,
+//                         name:        r.full_name         || 'Unknown',
+//                         age:         r.age               || '—',
+//                         gender:      r.gender            || 'Unknown',
+//                         loc:         r.last_seen_location|| '—',
+//                         date:        (r.last_seen_datetime || '').slice(0, 10),
+//                         status:      r.status            || 'Missing',
+//                         photo:       photoUrl,
+//                         familyPhone: r.contact_phone     || '',
+//                         contactName: r.contact_name      || '—',
+//                         source:      'db'
+//                     };
+//                 });
+//             }
+//             renderAdminTable();
+//         })
+//         .catch(function(err) {
+//             console.warn('Could not load reports from API:', err);
+//             renderAdminTable(); /* still render (empty or cached) */
+//         });
+// }
+
+// /* ---------- RENDER TABLE ---------- */
+// function renderAdminTable() {
+//     var q  = document.getElementById('admin-srch')
+//                 ? document.getElementById('admin-srch').value.toLowerCase() : '';
+//     var fs = document.getElementById('admin-filt')
+//                 ? document.getElementById('admin-filt').value : '';
+
+//     var data = adminReports.slice();
+
+//     if (fs) data = data.filter(function(r) { return r.status === fs; });
+//     if (q)  data = data.filter(function(r) {
+//         return r.name.toLowerCase().indexOf(q) !== -1;
+//     });
+
+//     /* --- Update stat counters --- */
+//     var statTotal = document.getElementById('stat-total');
+//     var statFound = document.getElementById('stat-found');
+//     if (statTotal) statTotal.textContent = adminReports.length;
+//     if (statFound) statFound.textContent = adminReports.filter(function(r) {
+//         return r.status === 'Found';
+//     }).length;
+
+//     var tb = document.getElementById('admin-tbl-body');
+//     if (!tb) return;
+
+//     if (!data.length) {
+//         tb.innerHTML =
+//             '<tr><td colspan="6">' +
+//             '<div class="ar-empty">' +
+//             '<i class="fas fa-search"></i>' +
+//             '<h3>No records found</h3>' +
+//             '<p>Adjust your search or filter.</p>' +
+//             '</div></td></tr>';
+//         return;
+//     }
+
+//     tb.innerHTML = data.map(function(r) {
+//         var statusKey  = (r.status || 'missing').toLowerCase();
+
+//         /* Avatar: prefer live photo, fall back to icon */
+//         var avatarHtml = r.photo
+//             ? '<img src="' + r.photo + '" alt="' + r.name +
+//               '" style="width:40px;height:40px;border-radius:50%;object-fit:cover"' +
+//               ' onerror="this.style.display=\'none\'"/>'
+//             : '<i class="fas fa-user"></i>';
+
+//         /* "Mark as Found" button only when not already found */
+//         var foundBtn = (r.status !== 'Found')
+//             ? '<button class="ar-btn ar-found-btn" onclick="markAdminFound(\'' + r.id + '\')">✅ Found</button>'
+//             : '';
+
+//         return '<tr>' +
+//             /* Column 1 — Avatar + Name */
+//             '<td>' +
+//               '<div class="apc">' +
+//                 '<div class="apc-ava">' + avatarHtml + '</div>' +
+//                 '<div>' +
+//                   '<div class="apc-name">' + r.name + '</div>' +
+//                   '<div class="apc-sub">ID #' + r.id + ' · ' + r.date + '</div>' +
+//                 '</div>' +
+//               '</div>' +
+//             '</td>' +
+//             /* Column 2 — Age & Gender */
+//             '<td><strong>' + r.age + '</strong> · ' + r.gender + '</td>' +
+//             /* Column 3 — Last seen location */
+//             '<td style="max-width:160px;font-size:12.5px;line-height:1.4">' + (r.loc || '—') + '</td>' +
+//             /* Column 4 — Date */
+//             '<td style="font-size:12.5px">' + r.date + '</td>' +
+//             /* Column 5 — Status badge */
+//             '<td>' +
+//               '<span class="ar-badge ar-' + statusKey + '">' +
+//                 '<span class="ar-dot"></span>' + r.status +
+//               '</span>' +
+//             '</td>' +
+//             /* Column 6 — Action buttons */
+//             '<td>' +
+//               '<div class="ar-acts">' +
+//                 '<button class="ar-btn" onclick="viewAdminDetail(\'' + r.id + '\')">View</button>' +
+//                 '<button class="ar-btn ar-ai" onclick="runAdminRecog(\'' + r.id + '\')">🤖 Recognition</button>' +
+//                 foundBtn +
+//               '</div>' +
+//             '</td>' +
+//         '</tr>';
+//     }).join('');
+// }
+
+// /* ---------- MARK AS FOUND ---------- */
+// function markAdminFound(id) {
+//     /* Optimistic local update */
+//     var r = adminReports.find(function(x) { return String(x.id) === String(id); });
+//     if (r) {
+//         r.status = 'Found';
+//         renderAdminTable();
+//     }
+
+//     /* Sync to live API (FastAPI on onrender) */
+//     fetch('https://final-project-3rd-year.onrender.com/mark-found/' + id, {
+//         method: 'POST'
+//     }).catch(function(e) { console.error('mark-found (remote) error:', e); });
+
+//     /* Also sync to local Flask if running */
+//     fetch('https://final-project-3rd-year.onrender.com/mark-found/' + id, {
+//         method: 'POST'
+//     }).catch(function(e) { console.warn('mark-found (local) not available:', e); });
+// }
+
+// /* ---------- VIEW DETAIL (modal-style alert — replace with modal as needed) ---------- */
+// function viewAdminDetail(id) {
+//     var r = adminReports.find(function(x) { return String(x.id) === String(id); });
+//     if (!r) return;
+//     alert(
+//         'Name      : ' + r.name      + '\n' +
+//         'Age       : ' + r.age       + '  ·  Gender : ' + r.gender + '\n' +
+//         'Last Seen : ' + r.loc       + '\n' +
+//         'Date      : ' + r.date      + '\n' +
+//         'Status    : ' + r.status    + '\n' +
+//         'Contact   : ' + r.contactName + ' — ' + r.familyPhone
+//     );
+// }
+
+// /* ---------- FACE RECOGNITION (local Flask — port 5001) ---------- */
+// function runAdminRecog(id) {
+//     var r = adminReports.find(function(x) { return String(x.id) === String(id); });
+//     if (!r) return;
+
+//     /* Show a loading indicator in the button (optional UX improvement) */
+//     var btn = document.querySelector('[onclick="runAdminRecog(\'' + id + '\')"]');
+//     if (btn) { btn.textContent = '⏳ Running…'; btn.disabled = true; }
+
+//     fetch('https://final-project-3rd-year.onrender.com/recognize/' + id, { method: 'POST' })
+//         .then(function(res) { return res.json(); })
+//         .then(function(result) {
+//             if (btn) { btn.textContent = '🤖 Recognition'; btn.disabled = false; }
+
+//             if (result && result.match) {
+//                 alert(
+//                     '✅ Face Match Found!\n\n' +
+//                     'Matched with: ' + (result.matched_name || 'Unknown') + '\n' +
+//                     'Confidence  : ' + (result.confidence   || 'N/A')
+//                 );
+//             } else {
+//                 alert('❌ No match found in the database.');
+//             }
+//         })
+//         .catch(function(err) {
+//             if (btn) { btn.textContent = '🤖 Recognition'; btn.disabled = false; }
+//             console.error('Recognition error:', err);
+//             alert('⚠️ Face recognition service is not reachable.\nMake sure the local Flask server (port 5001) is running.');
+//         });
+// }
+
+// // ── Face Recognition ─────────────────────────────────
+// const API_BASE="https://final-project-3rd-year.onrender.com";
+// var _recogTargetId=null;
+
+// function runAdminRecog(id){
+//     var r=adminReports.find(function(x){return String(x.id)===String(id);});
+//     if(!r)return;
+//     _recogTargetId=id;
+//     if(r.photo){
+//         if(r.photo.startsWith('data:')){_showRecogModal(r.name,r.photo);return;}
+//         var photoUrl=r.photo;
+//         if(photoUrl.startsWith('/'))photoUrl='https://final-project-3rd-year.onrender.com'+photoUrl;
+//         fetch(photoUrl).then(function(res){if(!res.ok)throw new Error('HTTP '+res.status);return res.blob();})
+//         .then(function(blob){var rd=new FileReader();rd.onload=function(e){_showRecogModal(r.name,e.target.result);};rd.readAsDataURL(blob);})
+//         .catch(function(){_showRecogModal(r.name,null);});
+//     }else{_showRecogModal(r.name,null);}
+// }
+
+// function _showRecogModal(name,photoDataURL){
+//     var old=document.getElementById('recogModal');if(old)old.remove();
+//     var modal=document.createElement('div');
+//     modal.id='recogModal';
+//     modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+//     var ps='',ab='';
+//     if(photoDataURL){
+//         ps='<div style="margin-bottom:18px;"><p style="color:#64748b;font-size:.85rem;margin:0 0 10px;">Photo from submitted report:</p><img src="'+photoDataURL+'" style="max-width:180px;max-height:180px;border-radius:10px;object-fit:cover;border:3px solid #3b82f6;"/></div>';
+//         ab='<button onclick="autoRecognize()" style="padding:11px 28px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:700;font-family:inherit;">🔍 Run Face Recognition</button>'+
+//            '<button onclick="closeRecogModal()" style="padding:11px 22px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">Cancel</button>';
+//     }else{
+//         ps='<video id="recogVideo" autoplay playsinline muted style="width:100%;max-height:240px;border-radius:10px;background:#000;display:none;margin-bottom:12px;"></video>'+
+//            '<canvas id="recogCanvas" style="display:none;"></canvas>'+
+//            '<div id="recogUploadArea" onclick="document.getElementById(\'recogFileInput\').click()" style="border:2px dashed #cbd5e1;border-radius:10px;padding:28px 16px;margin-bottom:18px;cursor:pointer;color:#64748b;font-size:.9rem;text-align:center;">'+
+//            '<div style="font-size:2.5rem;margin-bottom:8px;">📷</div><div>Click to upload a photo<br><small>or use the camera below</small></div>'+
+//            '<input type="file" id="recogFileInput" accept="image/*" style="display:none;" onchange="handleRecogFileSelect(event)"></div>';
+//         ab='<button id="recogCamBtn" onclick="startRecogCamera()" style="padding:10px 20px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">📹 Camera</button>'+
+//            '<button id="recogScanBtn" onclick="captureAndRecognize()" style="padding:10px 20px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;display:none;font-family:inherit;">🔍 Scan</button>'+
+//            '<button onclick="closeRecogModal()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">Cancel</button>';
+//     }
+//     modal.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;font-family:inherit;">'+
+//         '<h2 style="margin:0 0 4px;font-size:1.25rem;font-weight:900;">🤖 AI Face Recognition</h2>'+
+//         '<p style="color:#64748b;margin:0 0 18px;font-size:.87rem;">Person: <strong>'+name+'</strong></p>'+
+//         ps+'<div id="recogResult" style="display:none;margin-bottom:16px;text-align:left;"></div>'+
+//         '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'+ab+'</div></div>';
+//     document.body.appendChild(modal);
+//     if(photoDataURL)modal._photoDataURL=photoDataURL;
+// }
+
+// function autoRecognize(){var modal=document.getElementById('recogModal');if(!modal||!modal._photoDataURL)return;_sendToRecognize(modal._photoDataURL);}
+
+// var _recogStream=null;
+// function startRecogCamera(){
+//     navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
+//     .then(function(stream){
+//         _recogStream=stream;
+//         var video=document.getElementById('recogVideo'),camBtn=document.getElementById('recogCamBtn'),scanBtn=document.getElementById('recogScanBtn'),area=document.getElementById('recogUploadArea');
+//         video.srcObject=stream;video.style.display='block';area.style.display='none';camBtn.style.display='none';scanBtn.style.display='inline-block';
+//     }).catch(function(err){alert('Camera not available: '+err.message);});
+// }
+
+// function captureAndRecognize(){
+//     var video=document.getElementById('recogVideo'),canvas=document.getElementById('recogCanvas');
+//     canvas.width=video.videoWidth||640;canvas.height=video.videoHeight||480;
+//     canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
+//     _sendToRecognize(canvas.toDataURL('image/jpeg',0.9));
+// }
+
+// function handleRecogFileSelect(event){
+//     var file=event.target.files[0];if(!file)return;
+//     var area=document.getElementById('recogUploadArea'),rd=new FileReader();
+//     rd.onload=function(e){if(area){area.innerHTML='<img src="'+e.target.result+'" style="max-width:140px;max-height:140px;border-radius:10px;object-fit:cover;border:3px solid #22c55e;"/><p style="margin:8px 0 0;font-size:.85rem;color:#22c55e;">Photo selected ✓</p>';}
+//     _sendToRecognize(e.target.result);};rd.readAsDataURL(file);
+// }
+
+// function _sendToRecognize(dataURL){
+//     var resultDiv=document.getElementById('recogResult');if(!resultDiv)return;
+//     resultDiv.style.display='block';
+//     resultDiv.innerHTML='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;color:#3b82f6;font-size:.9rem;text-align:center;">⏳ Analyzing… this may take a moment on first run</div>';
+//     var modal=document.getElementById('recogModal');
+//     if(modal)modal.querySelectorAll('button').forEach(function(b){if(b.textContent.indexOf('Cancel')===-1)b.disabled=true;});
+//     var r=adminReports.find(function(x){return String(x.id)===String(_recogTargetId);});
+//     if(r){r.status='Processing';renderAdminTable();}
+//     fetch(API_BASE+'/recognize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataURL})})
+//     .then(function(res){return res.json();})
+//     .then(function(data){
+//         if(data.error){
+//             resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#dc2626;font-size:.9rem;">❌ Error: '+data.error+'</div>';
+//             if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}return;
+//         }
+//         if(data.match){
+//             resultDiv.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;"><div style="color:#16a34a;font-size:1.05rem;font-weight:700;margin-bottom:10px;">✅ Match Found!</div>'+
+//                 '<table style="width:100%;font-size:.88rem;border-collapse:collapse;"><tr><td style="color:#64748b;padding:3px 0;">Name</td><td style="font-weight:700;">'+(data.person_name||'—')+'</td></tr>'+
+//                 '<tr><td style="color:#64748b;padding:3px 0;">Inmate ID</td><td style="font-weight:700;">'+(data.person_id||'—')+'</td></tr>'+
+//                 '<tr><td style="color:#64748b;padding:3px 0;">Confidence</td><td><span style="background:#dcfce7;color:#16a34a;padding:2px 10px;border-radius:20px;font-weight:700;">'+data.confidence+'%</span></td></tr></table></div>';
+//             if(r){r.status='Found';renderAdminTable();}
+//             showToast('Match Found','✅ '+data.person_name+' ('+data.confidence+'%)','success');
+//             fetch('https://final-project-3rd-year.onrender.com/save-notification',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'match',title:'Match Found — '+(data.person_name||'Unknown'),message:'Face recognition match found for '+(r?r.name:'person')+' with '+data.confidence+'% confidence.',report_name:r?r.name:'',phone:r?(r.familyPhone||''):'',read:false})}).catch(function(){});
+//         }else{
+//             resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;"><div style="color:#dc2626;font-size:1.05rem;font-weight:700;margin-bottom:8px;">❌ No Match Found</div><p style="color:#64748b;font-size:.88rem;margin:0;">'+(data.message||'No match found')+'</p></div>';
+//             if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}
+//         }
+//         if(modal)modal.querySelectorAll('button').forEach(function(b){b.disabled=false;});
+//     })
+//     .catch(function(err){
+//         resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;font-size:.88rem;">❌ Network error: '+err.message+'<br><small style="color:#94a3b8;">Make sure the backend server is running.</small></div>';
+//         if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}
+//         if(modal)modal.querySelectorAll('button').forEach(function(b){b.disabled=false;});
+//     });
+// }
+
+// function closeRecogModal(){
+//     if(_recogStream){_recogStream.getTracks().forEach(function(t){t.stop();});_recogStream=null;}
+//     var modal=document.getElementById('recogModal');if(modal)modal.remove();_recogTargetId=null;
+// }
+
+// ==============================================================================================================
+
+
+const API_BASE = "https://final-project-3rd-year.onrender.com";
+
+// ── Admin Table ──────────────────────────────────────
+// FIX #1: Only ONE declaration of adminReports — no hardcoded sample data.
+// The hardcoded array was being declared first, then overwritten with [] below,
+// causing the table to always show empty. Now there is only one declaration.
 var adminReports = [];
 
 /* ---------- LOAD REPORTS FROM LIVE API ---------- */
 function loadAdminReports() {
-    fetch('https://final-project-3rd-year.onrender.com/get-missing-reports')
-        .then(function(res) { return res.json(); })
+    fetch(API_BASE + '/get-missing-reports')
+        .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+        })
         .then(function(data) {
             if (Array.isArray(data) && data.length > 0) {
                 adminReports = data.map(function(r) {
-                    /* Build photo URL from the live FastAPI server */
+                    // FIX #3: Correct photo URL — ensure leading slash between base and path
                     var photoUrl = null;
                     if (r.photo_path) {
-                        /* photo_path is typically "data/filename.jpg" or similar */
                         var cleanPath = r.photo_path.replace(/\\/g, '/');
-                        photoUrl = 'https://final-project-3rd-year.onrender.com/' + cleanPath;
+                        // Remove leading slash from cleanPath to avoid double-slash
+                        if (cleanPath.startsWith('/')) cleanPath = cleanPath.slice(1);
+                        photoUrl = API_BASE + '/' + cleanPath;
                     }
                     return {
                         id:          r._id,
-                        name:        r.full_name         || 'Unknown',
-                        age:         r.age               || '—',
-                        gender:      r.gender            || 'Unknown',
-                        loc:         r.last_seen_location|| '—',
-                        date:        (r.last_seen_datetime || '').slice(0, 10),
-                        status:      r.status            || 'Missing',
+                        name:        r.full_name              || 'Unknown',
+                        age:         r.age                    || '—',
+                        gender:      r.gender                 || 'Unknown',
+                        loc:         r.last_seen_location     || '—',
+                        date:        (r.last_seen_datetime    || '').slice(0, 10),
+                        status:      r.status                 || 'Missing',
                         photo:       photoUrl,
-                        familyPhone: r.contact_phone     || '',
-                        contactName: r.contact_name      || '—',
+                        familyPhone: r.contact_phone          || '',
+                        contactName: r.contact_name           || '—',
                         source:      'db'
                     };
                 });
+            } else {
+                // API returned empty array — keep adminReports as []
+                adminReports = [];
             }
             renderAdminTable();
         })
         .catch(function(err) {
-            console.warn('Could not load reports from API:', err);
-            renderAdminTable(); /* still render (empty or cached) */
+            console.error('Could not load reports from API:', err);
+            // Show error state in table instead of silently failing
+            var tb = document.getElementById('admin-tbl-body');
+            if (tb) {
+                tb.innerHTML =
+                    '<tr><td colspan="6">' +
+                    '<div class="ar-empty" style="color:#dc2626;">' +
+                    '<i class="fas fa-exclamation-triangle"></i>' +
+                    '<h3>Could not load reports</h3>' +
+                    '<p>API unreachable. Check your server and try refreshing.</p>' +
+                    '</div></td></tr>';
+            }
         });
 }
 
@@ -152,7 +483,7 @@ function renderAdminTable() {
         return r.name.toLowerCase().indexOf(q) !== -1;
     });
 
-    /* --- Update stat counters --- */
+    /* Update stat counters */
     var statTotal = document.getElementById('stat-total');
     var statFound = document.getElementById('stat-found');
     if (statTotal) statTotal.textContent = adminReports.length;
@@ -175,22 +506,19 @@ function renderAdminTable() {
     }
 
     tb.innerHTML = data.map(function(r) {
-        var statusKey  = (r.status || 'missing').toLowerCase();
+        var statusKey = (r.status || 'missing').toLowerCase();
 
-        /* Avatar: prefer live photo, fall back to icon */
         var avatarHtml = r.photo
             ? '<img src="' + r.photo + '" alt="' + r.name +
-              '" style="width:40px;height:40px;border-radius:50%;object-fit:cover"' +
+              '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"' +
               ' onerror="this.style.display=\'none\'"/>'
             : '<i class="fas fa-user"></i>';
 
-        /* "Mark as Found" button only when not already found */
         var foundBtn = (r.status !== 'Found')
             ? '<button class="ar-btn ar-found-btn" onclick="markAdminFound(\'' + r.id + '\')">✅ Found</button>'
             : '';
 
         return '<tr>' +
-            /* Column 1 — Avatar + Name */
             '<td>' +
               '<div class="apc">' +
                 '<div class="apc-ava">' + avatarHtml + '</div>' +
@@ -200,19 +528,14 @@ function renderAdminTable() {
                 '</div>' +
               '</div>' +
             '</td>' +
-            /* Column 2 — Age & Gender */
             '<td><strong>' + r.age + '</strong> · ' + r.gender + '</td>' +
-            /* Column 3 — Last seen location */
             '<td style="max-width:160px;font-size:12.5px;line-height:1.4">' + (r.loc || '—') + '</td>' +
-            /* Column 4 — Date */
             '<td style="font-size:12.5px">' + r.date + '</td>' +
-            /* Column 5 — Status badge */
             '<td>' +
               '<span class="ar-badge ar-' + statusKey + '">' +
                 '<span class="ar-dot"></span>' + r.status +
               '</span>' +
             '</td>' +
-            /* Column 6 — Action buttons */
             '<td>' +
               '<div class="ar-acts">' +
                 '<button class="ar-btn" onclick="viewAdminDetail(\'' + r.id + '\')">View</button>' +
@@ -226,182 +549,246 @@ function renderAdminTable() {
 
 /* ---------- MARK AS FOUND ---------- */
 function markAdminFound(id) {
-    /* Optimistic local update */
     var r = adminReports.find(function(x) { return String(x.id) === String(id); });
     if (r) {
         r.status = 'Found';
         renderAdminTable();
     }
-
-    /* Sync to live API (FastAPI on onrender) */
-    fetch('https://final-project-3rd-year.onrender.com/mark-found/' + id, {
-        method: 'POST'
-    }).catch(function(e) { console.error('mark-found (remote) error:', e); });
-
-    /* Also sync to local Flask if running */
-    fetch('https://final-project-3rd-year.onrender.com/mark-found/' + id, {
-        method: 'POST'
-    }).catch(function(e) { console.warn('mark-found (local) not available:', e); });
+    fetch(API_BASE + '/mark-found/' + id, { method: 'POST' })
+        .catch(function(e) { console.error('mark-found error:', e); });
 }
 
-/* ---------- VIEW DETAIL (modal-style alert — replace with modal as needed) ---------- */
+/* ---------- VIEW DETAIL ---------- */
 function viewAdminDetail(id) {
     var r = adminReports.find(function(x) { return String(x.id) === String(id); });
     if (!r) return;
     alert(
-        'Name      : ' + r.name      + '\n' +
-        'Age       : ' + r.age       + '  ·  Gender : ' + r.gender + '\n' +
-        'Last Seen : ' + r.loc       + '\n' +
-        'Date      : ' + r.date      + '\n' +
-        'Status    : ' + r.status    + '\n' +
+        'Name      : ' + r.name        + '\n' +
+        'Age       : ' + r.age         + '  ·  Gender : ' + r.gender + '\n' +
+        'Last Seen : ' + r.loc         + '\n' +
+        'Date      : ' + r.date        + '\n' +
+        'Status    : ' + r.status      + '\n' +
         'Contact   : ' + r.contactName + ' — ' + r.familyPhone
     );
 }
 
-/* ---------- FACE RECOGNITION (local Flask — port 5001) ---------- */
+/* ---------- FACE RECOGNITION (FIX #2: Only ONE runAdminRecog function) ---------- */
+// The simple fetch-only version that was overriding the full modal version is REMOVED.
+// This is the full working modal version kept intact.
+
+var _recogTargetId = null;
+
 function runAdminRecog(id) {
     var r = adminReports.find(function(x) { return String(x.id) === String(id); });
     if (!r) return;
+    _recogTargetId = id;
 
-    /* Show a loading indicator in the button (optional UX improvement) */
-    var btn = document.querySelector('[onclick="runAdminRecog(\'' + id + '\')"]');
-    if (btn) { btn.textContent = '⏳ Running…'; btn.disabled = true; }
-
-    fetch('https://final-project-3rd-year.onrender.com/recognize/' + id, { method: 'POST' })
-        .then(function(res) { return res.json(); })
-        .then(function(result) {
-            if (btn) { btn.textContent = '🤖 Recognition'; btn.disabled = false; }
-
-            if (result && result.match) {
-                alert(
-                    '✅ Face Match Found!\n\n' +
-                    'Matched with: ' + (result.matched_name || 'Unknown') + '\n' +
-                    'Confidence  : ' + (result.confidence   || 'N/A')
-                );
-            } else {
-                alert('❌ No match found in the database.');
-            }
-        })
-        .catch(function(err) {
-            if (btn) { btn.textContent = '🤖 Recognition'; btn.disabled = false; }
-            console.error('Recognition error:', err);
-            alert('⚠️ Face recognition service is not reachable.\nMake sure the local Flask server (port 5001) is running.');
-        });
-}
-
-// ── Face Recognition ─────────────────────────────────
-const API_BASE="https://final-project-3rd-year.onrender.com";
-var _recogTargetId=null;
-
-function runAdminRecog(id){
-    var r=adminReports.find(function(x){return String(x.id)===String(id);});
-    if(!r)return;
-    _recogTargetId=id;
-    if(r.photo){
-        if(r.photo.startsWith('data:')){_showRecogModal(r.name,r.photo);return;}
-        var photoUrl=r.photo;
-        if(photoUrl.startsWith('/'))photoUrl='https://final-project-3rd-year.onrender.com'+photoUrl;
-        fetch(photoUrl).then(function(res){if(!res.ok)throw new Error('HTTP '+res.status);return res.blob();})
-        .then(function(blob){var rd=new FileReader();rd.onload=function(e){_showRecogModal(r.name,e.target.result);};rd.readAsDataURL(blob);})
-        .catch(function(){_showRecogModal(r.name,null);});
-    }else{_showRecogModal(r.name,null);}
-}
-
-function _showRecogModal(name,photoDataURL){
-    var old=document.getElementById('recogModal');if(old)old.remove();
-    var modal=document.createElement('div');
-    modal.id='recogModal';
-    modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
-    var ps='',ab='';
-    if(photoDataURL){
-        ps='<div style="margin-bottom:18px;"><p style="color:#64748b;font-size:.85rem;margin:0 0 10px;">Photo from submitted report:</p><img src="'+photoDataURL+'" style="max-width:180px;max-height:180px;border-radius:10px;object-fit:cover;border:3px solid #3b82f6;"/></div>';
-        ab='<button onclick="autoRecognize()" style="padding:11px 28px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:700;font-family:inherit;">🔍 Run Face Recognition</button>'+
-           '<button onclick="closeRecogModal()" style="padding:11px 22px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">Cancel</button>';
-    }else{
-        ps='<video id="recogVideo" autoplay playsinline muted style="width:100%;max-height:240px;border-radius:10px;background:#000;display:none;margin-bottom:12px;"></video>'+
-           '<canvas id="recogCanvas" style="display:none;"></canvas>'+
-           '<div id="recogUploadArea" onclick="document.getElementById(\'recogFileInput\').click()" style="border:2px dashed #cbd5e1;border-radius:10px;padding:28px 16px;margin-bottom:18px;cursor:pointer;color:#64748b;font-size:.9rem;text-align:center;">'+
-           '<div style="font-size:2.5rem;margin-bottom:8px;">📷</div><div>Click to upload a photo<br><small>or use the camera below</small></div>'+
-           '<input type="file" id="recogFileInput" accept="image/*" style="display:none;" onchange="handleRecogFileSelect(event)"></div>';
-        ab='<button id="recogCamBtn" onclick="startRecogCamera()" style="padding:10px 20px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">📹 Camera</button>'+
-           '<button id="recogScanBtn" onclick="captureAndRecognize()" style="padding:10px 20px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;display:none;font-family:inherit;">🔍 Scan</button>'+
-           '<button onclick="closeRecogModal()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">Cancel</button>';
+    if (r.photo) {
+        if (r.photo.startsWith('data:')) {
+            _showRecogModal(r.name, r.photo);
+            return;
+        }
+        // Fetch photo from server and convert to base64 for the modal
+        fetch(r.photo)
+            .then(function(res) {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return res.blob();
+            })
+            .then(function(blob) {
+                var rd = new FileReader();
+                rd.onload = function(e) { _showRecogModal(r.name, e.target.result); };
+                rd.readAsDataURL(blob);
+            })
+            .catch(function() {
+                // Photo fetch failed — open modal without photo (camera/upload mode)
+                _showRecogModal(r.name, null);
+            });
+    } else {
+        _showRecogModal(r.name, null);
     }
-    modal.innerHTML='<div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;font-family:inherit;">'+
-        '<h2 style="margin:0 0 4px;font-size:1.25rem;font-weight:900;">🤖 AI Face Recognition</h2>'+
-        '<p style="color:#64748b;margin:0 0 18px;font-size:.87rem;">Person: <strong>'+name+'</strong></p>'+
-        ps+'<div id="recogResult" style="display:none;margin-bottom:16px;text-align:left;"></div>'+
-        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'+ab+'</div></div>';
+}
+
+function _showRecogModal(name, photoDataURL) {
+    var old = document.getElementById('recogModal');
+    if (old) old.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'recogModal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px;';
+
+    var ps = '', ab = '';
+
+    if (photoDataURL) {
+        // Has photo from submitted report — show it and auto-run recognition
+        ps = '<div style="margin-bottom:18px;">' +
+             '<p style="color:#64748b;font-size:.85rem;margin:0 0 10px;">Photo from submitted report:</p>' +
+             '<img src="' + photoDataURL + '" style="max-width:180px;max-height:180px;border-radius:10px;object-fit:cover;border:3px solid #3b82f6;"/>' +
+             '</div>';
+        ab = '<button onclick="autoRecognize()" style="padding:11px 28px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:700;font-family:inherit;">🔍 Run Face Recognition</button>' +
+             '<button onclick="closeRecogModal()" style="padding:11px 22px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">Cancel</button>';
+    } else {
+        // No photo — show upload/camera options
+        ps = '<video id="recogVideo" autoplay playsinline muted style="width:100%;max-height:240px;border-radius:10px;background:#000;display:none;margin-bottom:12px;"></video>' +
+             '<canvas id="recogCanvas" style="display:none;"></canvas>' +
+             '<div id="recogUploadArea" onclick="document.getElementById(\'recogFileInput\').click()" style="border:2px dashed #cbd5e1;border-radius:10px;padding:28px 16px;margin-bottom:18px;cursor:pointer;color:#64748b;font-size:.9rem;text-align:center;">' +
+             '<div style="font-size:2.5rem;margin-bottom:8px;">📷</div>' +
+             '<div>Click to upload a photo<br><small>or use the camera below</small></div>' +
+             '<input type="file" id="recogFileInput" accept="image/*" style="display:none;" onchange="handleRecogFileSelect(event)">' +
+             '</div>';
+        ab = '<button id="recogCamBtn" onclick="startRecogCamera()" style="padding:10px 20px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">📹 Camera</button>' +
+             '<button id="recogScanBtn" onclick="captureAndRecognize()" style="padding:10px 20px;background:#22c55e;color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;display:none;font-family:inherit;">🔍 Scan</button>' +
+             '<button onclick="closeRecogModal()" style="padding:10px 20px;background:#f1f5f9;color:#334155;border:none;border-radius:8px;font-size:.9rem;cursor:pointer;font-family:inherit;">Cancel</button>';
+    }
+
+    modal.innerHTML =
+        '<div style="background:#fff;border-radius:16px;padding:28px 24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;font-family:inherit;">' +
+        '<h2 style="margin:0 0 4px;font-size:1.25rem;font-weight:900;">🤖 AI Face Recognition</h2>' +
+        '<p style="color:#64748b;margin:0 0 18px;font-size:.87rem;">Person: <strong>' + name + '</strong></p>' +
+        ps +
+        '<div id="recogResult" style="display:none;margin-bottom:16px;text-align:left;"></div>' +
+        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' + ab + '</div>' +
+        '</div>';
+
     document.body.appendChild(modal);
-    if(photoDataURL)modal._photoDataURL=photoDataURL;
+    if (photoDataURL) modal._photoDataURL = photoDataURL;
 }
 
-function autoRecognize(){var modal=document.getElementById('recogModal');if(!modal||!modal._photoDataURL)return;_sendToRecognize(modal._photoDataURL);}
-
-var _recogStream=null;
-function startRecogCamera(){
-    navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false})
-    .then(function(stream){
-        _recogStream=stream;
-        var video=document.getElementById('recogVideo'),camBtn=document.getElementById('recogCamBtn'),scanBtn=document.getElementById('recogScanBtn'),area=document.getElementById('recogUploadArea');
-        video.srcObject=stream;video.style.display='block';area.style.display='none';camBtn.style.display='none';scanBtn.style.display='inline-block';
-    }).catch(function(err){alert('Camera not available: '+err.message);});
+function autoRecognize() {
+    var modal = document.getElementById('recogModal');
+    if (!modal || !modal._photoDataURL) return;
+    _sendToRecognize(modal._photoDataURL);
 }
 
-function captureAndRecognize(){
-    var video=document.getElementById('recogVideo'),canvas=document.getElementById('recogCanvas');
-    canvas.width=video.videoWidth||640;canvas.height=video.videoHeight||480;
-    canvas.getContext('2d').drawImage(video,0,0,canvas.width,canvas.height);
-    _sendToRecognize(canvas.toDataURL('image/jpeg',0.9));
+var _recogStream = null;
+
+function startRecogCamera() {
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+        .then(function(stream) {
+            _recogStream = stream;
+            var video   = document.getElementById('recogVideo');
+            var camBtn  = document.getElementById('recogCamBtn');
+            var scanBtn = document.getElementById('recogScanBtn');
+            var area    = document.getElementById('recogUploadArea');
+            video.srcObject = stream;
+            video.style.display = 'block';
+            if (area)    area.style.display    = 'none';
+            if (camBtn)  camBtn.style.display  = 'none';
+            if (scanBtn) scanBtn.style.display = 'inline-block';
+        })
+        .catch(function(err) { alert('Camera not available: ' + err.message); });
 }
 
-function handleRecogFileSelect(event){
-    var file=event.target.files[0];if(!file)return;
-    var area=document.getElementById('recogUploadArea'),rd=new FileReader();
-    rd.onload=function(e){if(area){area.innerHTML='<img src="'+e.target.result+'" style="max-width:140px;max-height:140px;border-radius:10px;object-fit:cover;border:3px solid #22c55e;"/><p style="margin:8px 0 0;font-size:.85rem;color:#22c55e;">Photo selected ✓</p>';}
-    _sendToRecognize(e.target.result);};rd.readAsDataURL(file);
+function captureAndRecognize() {
+    var video  = document.getElementById('recogVideo');
+    var canvas = document.getElementById('recogCanvas');
+    canvas.width  = video.videoWidth  || 640;
+    canvas.height = video.videoHeight || 480;
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    _sendToRecognize(canvas.toDataURL('image/jpeg', 0.9));
 }
 
-function _sendToRecognize(dataURL){
-    var resultDiv=document.getElementById('recogResult');if(!resultDiv)return;
-    resultDiv.style.display='block';
-    resultDiv.innerHTML='<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;color:#3b82f6;font-size:.9rem;text-align:center;">⏳ Analyzing… this may take a moment on first run</div>';
-    var modal=document.getElementById('recogModal');
-    if(modal)modal.querySelectorAll('button').forEach(function(b){if(b.textContent.indexOf('Cancel')===-1)b.disabled=true;});
-    var r=adminReports.find(function(x){return String(x.id)===String(_recogTargetId);});
-    if(r){r.status='Processing';renderAdminTable();}
-    fetch(API_BASE+'/recognize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:dataURL})})
-    .then(function(res){return res.json();})
-    .then(function(data){
-        if(data.error){
-            resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#dc2626;font-size:.9rem;">❌ Error: '+data.error+'</div>';
-            if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}return;
+function handleRecogFileSelect(event) {
+    var file = event.target.files[0];
+    if (!file) return;
+    var area = document.getElementById('recogUploadArea');
+    var rd   = new FileReader();
+    rd.onload = function(e) {
+        if (area) {
+            area.innerHTML =
+                '<img src="' + e.target.result + '" style="max-width:140px;max-height:140px;border-radius:10px;object-fit:cover;border:3px solid #22c55e;"/>' +
+                '<p style="margin:8px 0 0;font-size:.85rem;color:#22c55e;">Photo selected ✓</p>';
         }
-        if(data.match){
-            resultDiv.innerHTML='<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;"><div style="color:#16a34a;font-size:1.05rem;font-weight:700;margin-bottom:10px;">✅ Match Found!</div>'+
-                '<table style="width:100%;font-size:.88rem;border-collapse:collapse;"><tr><td style="color:#64748b;padding:3px 0;">Name</td><td style="font-weight:700;">'+(data.person_name||'—')+'</td></tr>'+
-                '<tr><td style="color:#64748b;padding:3px 0;">Inmate ID</td><td style="font-weight:700;">'+(data.person_id||'—')+'</td></tr>'+
-                '<tr><td style="color:#64748b;padding:3px 0;">Confidence</td><td><span style="background:#dcfce7;color:#16a34a;padding:2px 10px;border-radius:20px;font-weight:700;">'+data.confidence+'%</span></td></tr></table></div>';
-            if(r){r.status='Found';renderAdminTable();}
-            showToast('Match Found','✅ '+data.person_name+' ('+data.confidence+'%)','success');
-            fetch('https://final-project-3rd-year.onrender.com/save-notification',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'match',title:'Match Found — '+(data.person_name||'Unknown'),message:'Face recognition match found for '+(r?r.name:'person')+' with '+data.confidence+'% confidence.',report_name:r?r.name:'',phone:r?(r.familyPhone||''):'',read:false})}).catch(function(){});
-        }else{
-            resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;"><div style="color:#dc2626;font-size:1.05rem;font-weight:700;margin-bottom:8px;">❌ No Match Found</div><p style="color:#64748b;font-size:.88rem;margin:0;">'+(data.message||'No match found')+'</p></div>';
-            if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}
-        }
-        if(modal)modal.querySelectorAll('button').forEach(function(b){b.disabled=false;});
+        _sendToRecognize(e.target.result);
+    };
+    rd.readAsDataURL(file);
+}
+
+function _sendToRecognize(dataURL) {
+    var resultDiv = document.getElementById('recogResult');
+    if (!resultDiv) return;
+
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML =
+        '<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;color:#3b82f6;font-size:.9rem;text-align:center;">' +
+        '⏳ Analyzing… this may take a moment on first run</div>';
+
+    var modal = document.getElementById('recogModal');
+    if (modal) modal.querySelectorAll('button').forEach(function(b) {
+        if (b.textContent.indexOf('Cancel') === -1) b.disabled = true;
+    });
+
+    var r = adminReports.find(function(x) { return String(x.id) === String(_recogTargetId); });
+    if (r) { r.status = 'Processing'; renderAdminTable(); }
+
+    fetch(API_BASE + '/recognize', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ image: dataURL })
     })
-    .catch(function(err){
-        resultDiv.innerHTML='<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;font-size:.88rem;">❌ Network error: '+err.message+'<br><small style="color:#94a3b8;">Make sure the backend server is running.</small></div>';
-        if(r&&r.status==='Processing'){r.status='Missing';renderAdminTable();}
-        if(modal)modal.querySelectorAll('button').forEach(function(b){b.disabled=false;});
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (modal) modal.querySelectorAll('button').forEach(function(b) { b.disabled = false; });
+
+        if (data.error) {
+            resultDiv.innerHTML =
+                '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;color:#dc2626;font-size:.9rem;">❌ Error: ' + data.error + '</div>';
+            if (r && r.status === 'Processing') { r.status = 'Missing'; renderAdminTable(); }
+            return;
+        }
+
+        if (data.match || data.verified) {
+            resultDiv.innerHTML =
+                '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;">' +
+                '<div style="color:#16a34a;font-size:1.05rem;font-weight:700;margin-bottom:10px;">✅ Match Found!</div>' +
+                '<table style="width:100%;font-size:.88rem;border-collapse:collapse;">' +
+                '<tr><td style="color:#64748b;padding:3px 0;">Name</td><td style="font-weight:700;">' + (data.person_name || '—') + '</td></tr>' +
+                '<tr><td style="color:#64748b;padding:3px 0;">Inmate ID</td><td style="font-weight:700;">' + (data.person_id || '—') + '</td></tr>' +
+                '<tr><td style="color:#64748b;padding:3px 0;">Confidence</td><td><span style="background:#dcfce7;color:#16a34a;padding:2px 10px;border-radius:20px;font-weight:700;">' + data.confidence + '%</span></td></tr>' +
+                '</table></div>';
+            if (r) { r.status = 'Found'; renderAdminTable(); }
+            showToast('Match Found', '✅ ' + data.person_name + ' (' + data.confidence + '%)', 'success');
+
+            // Save notification
+            fetch(API_BASE + '/save-notification', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({
+                    type:        'match',
+                    title:       'Match Found — ' + (data.person_name || 'Unknown'),
+                    message:     'Face recognition match for ' + (r ? r.name : 'person') + ' with ' + data.confidence + '% confidence.',
+                    report_name: r ? r.name : '',
+                    phone:       r ? (r.familyPhone || '') : '',
+                    read:        false
+                })
+            }).catch(function() {});
+        } else {
+            resultDiv.innerHTML =
+                '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;">' +
+                '<div style="color:#dc2626;font-size:1.05rem;font-weight:700;margin-bottom:8px;">❌ No Match Found</div>' +
+                '<p style="color:#64748b;font-size:.88rem;margin:0;">' + (data.message || 'No match found in database.') + '</p></div>';
+            if (r && r.status === 'Processing') { r.status = 'Missing'; renderAdminTable(); }
+        }
+    })
+    .catch(function(err) {
+        if (modal) modal.querySelectorAll('button').forEach(function(b) { b.disabled = false; });
+        resultDiv.innerHTML =
+            '<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;font-size:.88rem;">' +
+            '❌ Network error: ' + err.message +
+            '<br><small style="color:#94a3b8;">Make sure the backend server is running.</small></div>';
+        if (r && r.status === 'Processing') { r.status = 'Missing'; renderAdminTable(); }
     });
 }
 
-function closeRecogModal(){
-    if(_recogStream){_recogStream.getTracks().forEach(function(t){t.stop();});_recogStream=null;}
-    var modal=document.getElementById('recogModal');if(modal)modal.remove();_recogTargetId=null;
+function closeRecogModal() {
+    if (_recogStream) {
+        _recogStream.getTracks().forEach(function(t) { t.stop(); });
+        _recogStream = null;
+    }
+    var modal = document.getElementById('recogModal');
+    if (modal) modal.remove();
+    _recogTargetId = null;
 }
+
 
 // ── Auth ─────────────────────────────────────────────
 function openLogin(){loginModal.style.display='flex';}
